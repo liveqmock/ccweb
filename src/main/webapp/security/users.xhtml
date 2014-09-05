@@ -1,0 +1,140 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!--
+    Copyright (C) 2014 Next Generation Mobile Service JSC., (NMS). All rights reserved.
+    Author: Nguyen Trong Cuong
+    Email: cuongnt@nms.com.vn
+    Date: 04/09/2014
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                template="/common/template.xhtml">
+
+    <ui:define name="title">
+        <h:outputText value="#{msg['user-management']}"/>
+    </ui:define>
+
+    <ui:define name="mainTitle">
+        <h:outputText value="#{msg['user-management']}"/>
+    </ui:define>
+
+    <ui:define name="topbody">
+
+        <!-- add new user dialog -->
+        <p:dialog id="addUserDialog" 
+                  widgetVar="addUserDialog" 
+                  modal="true" 
+                  header="#{msg['create-new-user']}" 
+                  resizable="false">
+            <ui:include src="/security/inc/add_user.xhtml"/>
+        </p:dialog><!-- end addUserDialog -->
+
+        <!-- edit user dialog -->
+        <p:dialog id="editUserDialog" 
+                  widgetVar="editUserDialog" 
+                  modal="true"
+                  header="#{msg['edit-user']}" 
+                  resizable="false">
+            <ui:include src="/security/inc/edit_user.xhtml"/>
+        </p:dialog><!-- end editUserDialog -->
+
+        <!-- change password dialog -->
+        <p:dialog id="changePassDialog" 
+                  widgetVar="changePassDialog" 
+                  modal="true"
+                  header="#{msg['change-password']}">
+            <ui:include src="/security/inc/change_password_user.xhtml"/>
+        </p:dialog><!-- end changePassDialog -->
+
+    </ui:define>
+
+    <ui:define name="content">
+        <h:form id="usersForm">
+            <p:commandButton value="#{msg['User.Create.Tilte']}"
+                             update=":addUserDialog"
+                             immediate="true"
+                             icon="ui-icon-plus"
+                             actionListener="#{userCtl.prepareCreate}"
+                             oncomplete="PF('addUserDialog').show();"/>
+
+            <p:dataTable id="userDataTable"
+                         value="#{userCtl.model}"
+                         var="ccsUser"
+                         lazy="true"
+                         rows="10"
+                         emptyMessage="#{msg['User.emtyMessage']}"
+                         paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                         rowsPerPageTemplate="10,15,20" 
+                         paginatorPosition="bottom"
+                         paginator="true">
+
+                <f:facet name="header">
+                    <h:outputText value="#{msg['User.List.title']}"/>
+                </f:facet>
+
+                <p:column headerText="#{msg['User.username.title']}" 
+                          filterBy="#{ccsUser.userName}"
+                          filterStyle="width: 150px;"
+                          filterMatchMode="contains">
+                    <h:outputText value="#{ccsUser.userName}"/>
+                </p:column>
+
+                <p:column headerText="#{msg['User.fullname.title']}" 
+                          filterBy="#{ccsUser.fullname}"
+                          filterStyle="width: 150px;"
+                          filterMatchMode="contains">
+                    <h:outputText value="#{ccsUser.fullname}"/>
+                </p:column>
+
+                <p:column headerText="#{msg['User.email.title']}" 
+                          filterBy="#{ccsUser.email}"
+                          filterStyle="width: 150px;"
+                          filterMatchMode="contains">
+                    <h:outputText value="#{ccsUser.email}"/>
+                </p:column>
+
+                <p:column headerText="#{msg['User.description.title']}" 
+                          filterBy="#{ccsUser.description}"
+                          filterStyle="width: 150px;"
+                          filterMatchMode="contains">
+                    <h:outputText value="#{ccsUser.description}"/>
+                </p:column>
+
+                <p:column headerText="#{msg['User.roles.title']}">
+                    <ui:repeat value="#{ccsUser.roles}" var="role" rendered="#{ccsUser.roles != null}">
+                        <h:outputText value="#{role}"/>
+                        <p:spacer/>
+                    </ui:repeat>
+                </p:column>
+
+                <p:column style="width: 90px; text-align: right;">
+                    <p:commandButton icon="ui-icon-pencil" 
+                                     update=":editUserDialog" 
+                                     immediate="true" 
+                                     oncomplete="PF('editUserDialog').show();">
+                        <f:setPropertyActionListener target="#{userCtl.current}" value="#{ccsUser}"/>
+                    </p:commandButton>
+
+                    <p:commandButton icon="ui-icon-key" 
+                                     update=":changePassDialog" 
+                                     immediate="true" 
+                                     oncomplete="PF('changePassDialog').show();">
+                        <f:setPropertyActionListener target="#{userCtl.current}" value="#{ccsUser}"/>
+                    </p:commandButton>
+
+                    <p:commandButton icon="ui-icon-trash" 
+                                     actionListener="#{userCtl.deleteUser(ccsUser)}" 
+                                     immediate="true" 
+                                     update="@form :growl">
+                        <p:confirm header="Confirmation" 
+                                   message="#{msg['User.Delete.ConfirmationMessage']}" 
+                                   icon="ui-icon-alert"/>
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable><!-- end userDataTable -->
+        </h:form>
+    </ui:define>
+</ui:composition>

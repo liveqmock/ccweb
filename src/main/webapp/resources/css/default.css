@@ -1,0 +1,96 @@
+/* Header stylesheet*/
+.nms-color {
+    color: #4471c4;
+}
+
+div.headerLayout {
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: hidden !important;
+    
+}
+
+div.headerLayout>div {
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: hidden !important;
+    position: relative; 
+}
+
+#header {
+    height: 50px;
+}
+
+#header a.logo {
+    text-decoration: none;
+    font-family: Arial;
+    font-size: 46px;
+    line-height: 50px;
+    font-weight: bolder;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    margin-right: 20px;
+    text-shadow: 5px 2px 2px #ccc;
+}
+
+#header .app-name {
+    color: #e14824;
+    font-size: 28px;
+    font-weight: bold;
+    line-height: 35px;
+    display: block;
+    font-style: italic;
+    position: absolute;
+    bottom: 4px;
+    left: 110px;
+    text-shadow: 1px 1px 1px #ccc;
+}
+
+#header #user-status {
+    position: absolute;
+    right: 10px;
+    top: 0;
+}
+/*Footer stylesheet*/
+#footer {
+    height: 100%;
+    font-size: 12px;
+    font-weight: bold;
+    vertical-align: middle;
+    text-align: right;
+    color: #282828;
+    padding-right: 10px;
+}
+
+.home-page-content {
+    vertical-align: middle;
+    text-align: center;
+    padding-top: 100px;
+}
+
+.home-page-content img {
+}
+
+.greeting {
+    font-size: 13px;
+    font-style: italic;
+    font-weight: bold;
+    text-shadow: 5px 2px 2px #ccc;
+    margin: 10px;
+    color: #646464;
+}
+
+/*Primefaces stylesheet*/
+
+.ui-widget,.ui-widget .ui-widget {
+    font-size: 12px !important;
+}
+
+.ui-corner-all {
+    border-radius: 1px;
+}
+
+.ui-chkbox-box {
+    vertical-align: bottom;
+}

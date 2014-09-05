@@ -1,0 +1,99 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!--
+    Copyright (C) 2014 Next Generation Mobile Service JSC., (NMS). All rights reserved.
+    Author: Nguyen Trong Cuong
+    Email: cuongnt@nms.com.vn
+    Date: 04/09/2014
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <!-- title placeholder -->
+        <title><ui:insert name="title">NMS Customer Care System</ui:insert></title>
+
+        <meta http-equiv="Content-type" content="text/html;charset=utf-8"/>
+        <meta name="author" content="cuongnt1987@live.com"/>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>  
+        <meta name="HandheldFriendly" content="true"/>  
+        <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no"/>
+        <link rel="shortcut icon" href="#{request.contextPath}/resources/image/nms-logo.gif"/>
+
+        <h:outputStylesheet library="css" name="default.css"/>
+        <h:outputScript library="js" name="default.js"/>
+
+        <!-- header placeholder  -->
+        <ui:insert name="header"/>
+
+    </h:head>
+    <h:body style="background: #f1f1f1;">
+        <p:growl id="growl" globalOnly="true"/>
+
+        <p:ajaxStatus onstart="PF('statusDialog').show()" 
+                      onsuccess="PF('statusDialog').hide()" />
+
+        <p:dialog id="statusDialog" 
+                  widgetVar="statusDialog" 
+                  modal="true" 
+                  draggable="false" 
+                  closable="false" 
+                  resizable="false" 
+                  showHeader="false">
+            <p:graphicImage library="image" name="ajax-loader.gif"/>
+        </p:dialog><!-- end statusDialog -->
+
+        <!-- global confirmation dialog -->
+        <p:confirmDialog global="true" showEffect="fade" hideEffect="explode">
+            <p:commandButton value="#{msg.ok}" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+            <p:commandButton value="#{msg.no}" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+        </p:confirmDialog><!-- end confirmDialog -->
+
+        <!-- topbody placeholder (used to put diablogs) -->
+        <ui:insert name="topbody"></ui:insert>
+
+        <p:layout id="mainLayout" fullPage="true">
+
+            <!-- topLayout to include header -->
+            <p:layoutUnit id="topLayout" 
+                          position="north" 
+                          size="50" 
+                          styleClass="headerLayout">
+                <ui:include src="/common/header.xhtml"/>
+            </p:layoutUnit><!-- end topLayout -->
+
+            <!-- bottomLayout to include footer -->
+            <p:layoutUnit id="bottomLayout" 
+                          position="south" 
+                          size="30" 
+                          styleClass="footerLayout">
+                <ui:include src="/common/footer.xhtml" transient="true"/>
+            </p:layoutUnit><!-- end bottomLayout -->
+
+            <!-- leftLayout to include mainNav -->
+            <p:layoutUnit id="leftLayout" 
+                          position="west" 
+                          size="200" 
+                          header="#{msg.navigation}" 
+                          collapsible="true">
+                <ui:include src="/common/navigation.xhtml"/>
+            </p:layoutUnit><!-- end leftLayout -->
+
+            <!-- contentLayout to include main contents -->
+            <p:layoutUnit id="contentLayout" 
+                          position="center">
+                <f:facet name="header">
+                    <!-- mainTitlte placeholder (using to include application current title) -->
+                    <ui:insert name="mainTitle">NMS Customer Care System</ui:insert>
+                </f:facet>
+
+                <!-- main content placeholder -->
+                <ui:insert name="content">Put main content here.</ui:insert>
+
+            </p:layoutUnit><!-- end contentLayout -->
+
+        </p:layout><!-- end mainLayout -->
+    </h:body>
+</html>

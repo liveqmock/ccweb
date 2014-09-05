@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!--
+    Copyright (C) 2014 Next Generation Mobile Service JSC., (NMS). All rights reserved.
+    Author: Nguyen Trong Cuong
+    Email: cuongnt@nms.com.vn
+    Date: 05/09/2014
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      template="/common/template.xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <ui:define name="title">
+        <h:outputText value="#{msg['login']}"/>
+    </ui:define>
+    
+    <ui:define name="mainTitle">
+        <h:outputText value="#{msg['login-system-title']}"/>
+    </ui:define>
+    
+    <ui:define name="content">
+        
+        <h:form id="loginForm">
+            <p:messages globalOnly="true"/>
+            
+            <h:panelGrid columns="3">
+                
+                <p:outputLabel for="username" value="#{msg['login.user.title']}"/>
+                <p:inputText id="username" value="#{authCtl.username}" size="40" required="true"
+                             requiredMessage="#{msg['login.user.required-message']}"/>
+                <p:message for="username"/>
+                
+                <p:outputLabel for="password" value="#{msg['login.password.title']}"/>
+                <p:password id="password" value="#{authCtl.password}" size="40" required="true"
+                            requiredMessage="#{msg['login.password.required-message']}"/>
+                <p:message for="password"/>
+                
+                <f:facet name="footer">
+                    <p:commandButton id="loginBtn" 
+                                     value="#{msg['login']}" 
+                                     actionListener="#{authCtl.login()}"
+                                     update="@all"
+                                     validateClient="true"/>
+                </f:facet>
+                
+            </h:panelGrid>
+        </h:form><!-- end loginForm -->
+    </ui:define>
+</ui:composition>

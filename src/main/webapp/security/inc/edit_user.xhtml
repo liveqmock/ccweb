@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!--
+    Copyright (C) 2014 Next Generation Mobile Service JSC., (NMS). All rights reserved.
+    Author: Nguyen Trong Cuong
+    Email: cuongnt@nms.com.vn
+    Date: 04/09/2014
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:form>
+        <p:messages globalOnly="true"/>
+        <h:panelGrid columns="3" width="100%">
+
+            <p:outputLabel for="username" value="#{msg['User.username.title']}"/>
+            <h:outputText id="username" value="#{userCtl.current.userName}"/>
+            <p:message for="username"/>
+
+            <p:outputLabel for="fullname" value="#{msg['User.fullname.title']}"/>
+            <p:inputText id="fullname" value="#{userCtl.current.fullname}" size="40"/>
+            <p:message for="fullname"/>
+
+            <p:outputLabel for="email" value="#{msg['User.email.title']}"/>
+            <p:inputText id="email" value="#{userCtl.current.email}" size="40"/>
+            <p:message for="email"/>
+
+            <p:outputLabel for="roles" value="#{msg['User.roles.title']}"/>
+            <p:selectManyMenu id="roles" value="#{userCtl.current.roles}" converter="enumConverter" showCheckbox="true">
+                <f:selectItems value="#{userCtl.roleSelectItems}"/>
+            </p:selectManyMenu>
+            <p:message for="roles"/>
+
+            <p:outputLabel for="description" value="#{msg['User.description.title']}"/>
+            <p:inputTextarea id="description" value="#{userCtl.current.description}" cols="32"/>
+            <p:message for="description"/>
+
+            <f:facet name="footer">
+                <p:commandButton value="#{msg['save']}" process="@form" update="@form :growl :usersForm" 
+                                 oncomplete="handleDialogSubmit(xhr, status, args, 'editUserDialog');"
+                                 actionListener="#{userCtl.edit}"/>
+                <p:commandButton value="#{msg.cancel}" type="button" onclick="PF('editUserDialog').hide();"/>
+            </f:facet>
+        </h:panelGrid>
+    </h:form>
+</ui:composition>

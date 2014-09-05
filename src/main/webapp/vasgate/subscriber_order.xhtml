@@ -1,0 +1,119 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!--
+    Copyright (C) 2014 Next Generation Mobile Service JSC., (NMS). All rights reserved.
+    Author: Nguyen Trong Cuong
+    Email: cuongnt@nms.com.vn
+    Date: 04/09/2014
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                template="/common/template.xhtml">
+
+    <ui:define name="title">
+        <h:outputText value="#{msg['vasgate-subscriber-order-lookup']}"/>
+    </ui:define>
+
+    <ui:define name="mainTitle">
+        <h:outputText value="#{msg['vasgate-subscriber-order-lookup']}"/>
+    </ui:define>
+
+    <ui:define name="content">
+        <h:form>
+            <p:panel id="searchFormPanel">
+                <h:panelGrid columns="6" width="100%">
+                    <p:outputLabel for="isdn" 
+                                   value="#{msg['suborder.isdn.title']}"/>
+                    <p:inputText id="isdn" 
+                                 value="#{vgSubOrderCtl.criteria.isdn}"/>
+
+                    <p:outputLabel for="startOrderDate" 
+                                   value="#{msg['suborder.startOrderDate.title']}"/>
+                    <p:calendar id="startOrderDate" 
+                                value="#{vgSubOrderCtl.criteria.startOrderDate}"
+                                showOn="button" 
+                                pattern="dd/MM/yyyy"/>
+
+                    <p:outputLabel for="endOrderDate" 
+                                   value="#{msg['suborder.endOrderDate.title']}"/>
+                    <p:calendar id="endOrderDate" 
+                                value="#{vgSubOrderCtl.criteria.endOrderDate}"
+                                showOn="button" pattern="dd/MM/yyyy"/>
+
+                    <p:outputLabel for="orderType" 
+                                   value="#{msg['suborder.orderType.title']}"/>
+                    <p:selectOneMenu id="orderType" 
+                                     value="#{vgSubOrderCtl.criteria.orderType}">
+                        <f:selectItems value="#{vgSubOrderCtl.orderTypeSelectItems}"/>
+                    </p:selectOneMenu>
+
+                    <p:outputLabel for="product" 
+                                   value="#{msg['suborder.product.title']}"/>
+                    <p:selectOneMenu id="product" 
+                                     value="#{vgSubOrderCtl.criteria.productEntry}"
+                                     converter="productEntryConverter">
+                        <f:selectItems value="#{vgSubOrderCtl.productSelectItems}"/>
+                    </p:selectOneMenu>
+                </h:panelGrid>
+
+                <f:facet name="footer">
+                    <p:commandButton id="searchBtn" 
+                                     value="#{msg['search']}" 
+                                     actionListener="#{vgSubOrderCtl.search}" 
+                                     ajax="true"
+                                     update="subOrderTable" 
+                                     icon="ui-icon-search"/>
+                </f:facet>
+            </p:panel><!-- end searchFormPanel -->
+
+            <p:spacer height="10"/>
+
+            <p:dataTable id="subOrderTable" value="#{vgSubOrderCtl.model}" 
+                         var="order" paginator="true" rows="10"
+                         paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                         rowsPerPageTemplate="10,15,20" lazy="true" 
+                         emptyMessage="#{msg['suborder.datatable.emptyMessage']}"
+                         paginatorPosition="bottom">
+                
+                <f:facet name="header">
+                    <h:outputText value="#{msg['suborder.datatable.title']}"/>
+                </f:facet>
+
+                <p:column headerText="#{msg['suborder.id.title']}">
+                    <h:outputText value="#{order.orderId}" />
+                </p:column>
+
+                <p:column headerText="#{msg['suborder.isdn.title']}">
+                    <h:outputText value="#{order.isdn}" />
+                </p:column>
+
+                <p:column headerText="#{msg['suborder.orderDate.title']}">
+                    <h:outputText value="#{order.orderDate}">
+                        <f:convertDateTime pattern="dd/MM/yy hh:mm"/>
+                    </h:outputText>
+                </p:column>
+
+                <p:column headerText="#{msg['suborder.status.title']}">
+                    <h:outputText value="#{order.status}"/>
+                </p:column>
+
+                <p:column headerText="#{msg['suborder.orderType.title']}">
+                    <h:outputText value="#{order.ordertype}" />
+                </p:column>
+
+                <p:column headerText="#{msg['suborder.product.title']}">
+                    <h:outputText value="#{order.productEntry.title}" />
+                </p:column>
+
+                <p:column headerText="#{msg['suborder.amount.title']}" style="text-align: right">
+                    <h:outputText value="#{order.amount}">
+                        <f:convertNumber pattern="#,##0.00 ¤" currencySymbol="VND"/>
+                    </h:outputText>
+                </p:column>
+            </p:dataTable><!-- end subOrderTable -->
+        </h:form>
+    </ui:define>
+</ui:composition>

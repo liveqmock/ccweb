@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!--
+    Copyright (C) 2014 Next Generation Mobile Service JSC., (NMS). All rights reserved.
+    Author: Nguyen Trong Cuong
+    Email: cuongnt@nms.com.vn
+    Date: 04/09/2014
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <p:menu id="mainNav" style="width: 182px;">
+
+        <!-- home page -->
+        <p:menuitem value="#{msg['home-page']}" 
+                    icon="ui-icon-home"
+                    outcome="/index.xhtml"/>
+
+        <!-- vasgate subscriber order lookup -->
+        <p:menuitem value="#{msg['vasgate-subscriber-order-lookup']}" 
+                    icon="ui-icon-folder-open" 
+                    outcome="/vasgate/subscriber_order.xhtml"/>
+
+        <!-- admin functionalities -->
+        <p:submenu id="adminSubNav" 
+                   label="#{msg['app-setting-label']}" 
+                   icon="ui-icon-gear">
+
+            <!-- user management -->
+            <p:menuitem  value="#{msg['user-management']}" 
+                         icon="ui-icon-person"
+                         rendered="#{request.isUserInRole('Administrator')}"
+                         outcome="/security/users.xhtml"/>
+
+            <!-- change password for current logged in user -->
+            <p:menuitem  value="#{msg['change-password']}" 
+                         icon="ui-icon-key"
+                         outcome="/change_password.xhtml"/>
+
+        </p:submenu><!-- end adminSubNav -->
+    </p:menu><!-- end mainNav -->
+</ui:composition>
+
