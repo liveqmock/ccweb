@@ -11,5 +11,4 @@
         <property name="driverClass" value="oracle.jdbc.OracleDriver"/>
     </jdbc-connection-pool>
     <jdbc-resource enabled="true" jndi-name="jdbc/vasgate" object-type="user" pool-name="nvasgatePool"/>
-    <custom-resource
 </resources>

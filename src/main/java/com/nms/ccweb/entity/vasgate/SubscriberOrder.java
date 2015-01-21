@@ -74,10 +74,14 @@ public class SubscriberOrder implements Serializable {
     private Date cycleDate;
     @Column(name = "SUBSCRIBERID")
     private BigInteger subscriberId;
-    @Column(name = "SUBPRODUCTID")
-    private Long subproductId;
+    
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "SUBPRODUCTID", insertable = false, updatable = false)
+    private SubscriberProduct subscriberProduct;
+    
     @Column(name = "SUBSCRIBERTYPE")
     private Long subscriberType;
+    
     @Size(max = 300)
     @Column(name = "ISDN")
     private String isdn;
@@ -222,12 +226,12 @@ public class SubscriberOrder implements Serializable {
         this.subscriberId = subscriberId;
     }
 
-    public Long getSubproductId() {
-        return subproductId;
+    public SubscriberProduct getSubscriberProduct() {
+        return subscriberProduct;
     }
 
-    public void setSubproductId(Long subproductId) {
-        this.subproductId = subproductId;
+    public void setSubscriberProduct(SubscriberProduct subscriberProduct) {
+        this.subscriberProduct = subscriberProduct;
     }
 
     public Long getSubscriberType() {

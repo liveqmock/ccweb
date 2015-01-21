@@ -35,4 +35,11 @@ public class VGProductEntryBean implements Serializable {
     public ProductEntry find(Long id) {
         return em.find(ProductEntry.class, id);
     }
+    
+    public List<ProductEntry> getActiveProductByIsdn(String isdn) {
+        TypedQuery<ProductEntry> q = em.createQuery("SELECT sp.productEntry FROM SubscriberProduct sp WHERE sp.isdn = :isdn", ProductEntry.class);
+        q.setParameter("isdn", isdn);
+        
+        return q.getResultList();
+    }
 }

@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!--
+    Copyright (C) 2014 Next Generation Mobile Service JSC., (NMS). All rights reserved.
+    Author: Nguyen Trong Cuong
+    Email: cuongnt@nms.com.vn
+    Date: 04/09/2014
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                template="/common/template.xhtml">
+
+    <ui:define name="title">
+        <h:outputText value="Hủy dịch vụ Vasgate"/>
+    </ui:define>
+
+    <ui:define name="mainTitle">
+        <h:outputText value="Hủy dịch vụ Vasgate"/>
+    </ui:define>
+
+    <ui:define name="content">
+        <h:form id="form">
+            <h2>Hủy dịch vụ cho thuê bao</h2>
+            <p:messages globalOnly="true" closable="true" showSummary="true" showDetail="false"/>
+            <h:panelGrid columns="3">
+                <p:outputLabel for="isdn" value="Số điện thoại thuê bao:"/>
+                <p:inputText id="isdn" value="#{vGUnregisterProductController.isdn}"
+                             valueChangeListener="#{vGUnregisterProductController.processIsdnChange}">
+                    <p:ajax update="isdnMessage"/>
+                </p:inputText>
+                <p:message id="isdnMessage" for="isdn"/>
+                
+                <p:outputLabel for="product" value="Dịch vụ"/>
+                <p:selectOneMenu id="product" value="#{vGUnregisterProductController.product}">
+                    <f:selectItems value="#{vGUnregisterProductController.productNames}"/>
+                </p:selectOneMenu>
+                <p:message for="product"/>
+                
+                <f:facet name="footer">
+                    <p:commandButton value="Hủy dịch vụ" actionListener="#{vGUnregisterProductController.unregister()}" update="@form"/>
+                </f:facet>
+            </h:panelGrid>
+        </h:form>
+    </ui:define>
+</ui:composition>
