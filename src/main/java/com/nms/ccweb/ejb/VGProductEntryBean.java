@@ -37,7 +37,7 @@ public class VGProductEntryBean implements Serializable {
     }
     
     public List<ProductEntry> getActiveProductByIsdn(String isdn) {
-        TypedQuery<ProductEntry> q = em.createQuery("SELECT sp.productEntry FROM SubscriberProduct sp WHERE sp.isdn = :isdn AND sp.subscriptionstatus = 1", ProductEntry.class);
+        TypedQuery<ProductEntry> q = em.createQuery("SELECT sp.productEntry FROM SubscriberProduct sp WHERE sp.isdn = :isdn AND sp.supplierstatus = 1", ProductEntry.class);
         q.setParameter("isdn", isdn);
         
         return q.getResultList();
