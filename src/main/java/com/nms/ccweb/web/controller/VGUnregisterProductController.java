@@ -98,8 +98,8 @@ public class VGUnregisterProductController implements Serializable {
             VgResponse respose = vgService.sendOrder(request);
             
              LOGGER.log(Level.INFO, "Call VasgateWS, inputParam: isdn={0}, content={1}, "
-                    + "serviceAddress={2}, username={3}, password={5}; response: reponseCode={6},"
-                    + "cause={7}, parameter={8}, responseDesc={9} ", new Object[]{
+                    + "serviceAddress={2}, username={3}, password={4}; response: reponseCode={5},"
+                    + "cause={6}, parameter={7}, responseDesc={8} ", new Object[]{
                 request.getIsdn(),
                 request.getContent(),
                 request.getServiceAddress(),
