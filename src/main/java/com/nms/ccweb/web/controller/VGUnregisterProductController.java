@@ -127,8 +127,8 @@ public class VGUnregisterProductController implements Serializable {
 
                 for (int i = 0; i < products.size(); i++) {
                     String productTitle = products.get(i).getTitle();
-                    //String productAlias = products.get(i).getAlias();
-                    productNames[i] = new SelectItem(productTitle, productTitle);
+                    String productId = String.valueOf(products.get(i).getProductId());
+                    productNames[i] = new SelectItem(productId, productTitle);
                 }
             } else {
                 productNames = new SelectItem[]{};
