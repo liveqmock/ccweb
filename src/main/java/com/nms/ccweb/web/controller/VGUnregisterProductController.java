@@ -116,6 +116,9 @@ public class VGUnregisterProductController implements Serializable {
             if (responseCode == 0) {
                 String successMessage = RB.getString("unregistry-success-message");
                 message = new FacesMessage(FacesMessage.SEVERITY_INFO, successMessage, successMessage);
+                // Reset form
+                isdn = null;
+                productNames = null;
             } else {
                 String failMessage = RB.getString("unregistry-failt-message");
                 LOGGER.log(Level.SEVERE, "VGWebservice ERROR CAUSE: {0}", respose.getCause());
