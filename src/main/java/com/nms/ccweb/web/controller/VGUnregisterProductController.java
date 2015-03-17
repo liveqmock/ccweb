@@ -150,6 +150,9 @@ public class VGUnregisterProductController implements Serializable {
                 }
             } else {
                 productNames = new SelectItem[]{};
+                String message = RB.getString("subscriber-have-not-active-product");
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, message, message);
+                FacesContext.getCurrentInstance().addMessage(null, msg);
             }
 
             RequestContext.getCurrentInstance().update("form");
