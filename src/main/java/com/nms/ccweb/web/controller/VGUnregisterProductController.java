@@ -42,6 +42,9 @@ public class VGUnregisterProductController implements Serializable {
     private static final Logger LOGGER = Logger.getLogger(VGUnregisterProductController.class.getName());
     private static final ResourceBundle RB = ResourceBundle.getBundle("Message");
     private static final ResourceBundle CONFIG = ResourceBundle.getBundle("config");
+    private static final String SERVICE_ADDRESS_PROP_NAME = "webservice.vasgate.serviceAddress.unregister";
+    private static final String SERVICE_WSDL_LOCATION_PROP_NAME = "webservice.vasgate.wsdl";
+    
 
     @EJB
     private VGProductEntryBean productService;
@@ -64,7 +67,7 @@ public class VGUnregisterProductController implements Serializable {
         URL wsdlUrl = null;
         VGServiceImplService service;
         try {
-            wsdlUrl = new URL(CONFIG.getString("webservice.vasgate.wsdl"));
+            wsdlUrl = new URL(CONFIG.getString(SERVICE_WSDL_LOCATION_PROP_NAME));
         } catch (MalformedURLException e){
             LOGGER.log(Level.SEVERE, "webservice.vasgate.wsdl not correct in config file.", e);
         }
@@ -81,11 +84,13 @@ public class VGUnregisterProductController implements Serializable {
     public void unregister() {
         FacesMessage message;
         FacesContext facesContext = FacesContext.getCurrentInstance();
+        String serviceAddress = CONFIG.getString(SERVICE_ADDRESS_PROP_NAME);
+        if (serviceAddress == null || serviceAddress.trim().isEmpty()) serviceAddress = "123";
 
         VgRequest request = new VgRequest();
         request.setIsdn(isdn);
         request.setContent(product);
-        request.setServiceAddress("123");
+        request.setServiceAddress(serviceAddress);
 
         try {
             VgResponse respose = vgService.sendOrder(request);
@@ -122,6 +127,7 @@ public class VGUnregisterProductController implements Serializable {
 
                 for (int i = 0; i < products.size(); i++) {
                     String productTitle = products.get(i).getTitle();
+                    //String productAlias = products.get(i).getAlias();
                     productNames[i] = new SelectItem(productTitle, productTitle);
                 }
             } else {
