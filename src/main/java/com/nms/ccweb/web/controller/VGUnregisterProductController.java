@@ -44,7 +44,6 @@ public class VGUnregisterProductController implements Serializable {
     private static final ResourceBundle CONFIG = ResourceBundle.getBundle("config");
     private static final String SERVICE_ADDRESS_PROP_NAME = "webservice.vasgate.serviceAddress.unregister";
     private static final String SERVICE_WSDL_LOCATION_PROP_NAME = "webservice.vasgate.wsdl";
-    
 
     @EJB
     private VGProductEntryBean productService;
@@ -68,16 +67,16 @@ public class VGUnregisterProductController implements Serializable {
         VGServiceImplService service;
         try {
             wsdlUrl = new URL(CONFIG.getString(SERVICE_WSDL_LOCATION_PROP_NAME));
-        } catch (MalformedURLException e){
+        } catch (MalformedURLException e) {
             LOGGER.log(Level.SEVERE, "webservice.vasgate.wsdl not correct in config file.", e);
         }
-        
+
         if (wsdlUrl == null) {
             service = new VGServiceImplService();
         } else {
             service = new VGServiceImplService(wsdlUrl);
         }
-        
+
         vgService = service.getVGServiceImplPort();
     }
 
@@ -85,7 +84,9 @@ public class VGUnregisterProductController implements Serializable {
         FacesMessage message;
         FacesContext facesContext = FacesContext.getCurrentInstance();
         String serviceAddress = CONFIG.getString(SERVICE_ADDRESS_PROP_NAME);
-        if (serviceAddress == null || serviceAddress.trim().isEmpty()) serviceAddress = "123";
+        if (serviceAddress == null || serviceAddress.trim().isEmpty()) {
+            serviceAddress = "123";
+        }
 
         VgRequest request = new VgRequest();
         request.setIsdn(isdn);
@@ -93,11 +94,25 @@ public class VGUnregisterProductController implements Serializable {
         request.setServiceAddress(serviceAddress);
 
         try {
+           
             VgResponse respose = vgService.sendOrder(request);
+            
+             LOGGER.log(Level.INFO, "Call VasgateWS, inputParam: isdn={0}, content={1}, "
+                    + "serviceAddress={2}, username={3}, password={5}; response: reponseCode={6},"
+                    + "cause={7}, parameter={8}, responseDesc={9} ", new Object[]{
+                request.getIsdn(),
+                request.getContent(),
+                request.getServiceAddress(),
+                request.getUsername(),
+                request.getPassword(),
+                respose.getResponseCode(),
+                respose.getCause(),
+                respose.getParameter(),
+                respose.getResponseDesc()
+            });
 
             int responseCode = respose.getResponseCode();
 
-            
             if (responseCode == 0) {
                 String successMessage = RB.getString("unregistry-success-message");
                 message = new FacesMessage(FacesMessage.SEVERITY_INFO, successMessage, successMessage);
