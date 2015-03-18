@@ -11,8 +11,10 @@ import java.math.BigInteger;
 import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
+import javax.persistence.ConstraintMode;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -76,7 +78,7 @@ public class SubscriberOrder implements Serializable {
     private BigInteger subscriberId;
     
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "SUBPRODUCTID", insertable = false, updatable = false)
+    @JoinColumn(name = "SUBPRODUCTID", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private SubscriberProduct subscriberProduct;
     
     @Column(name = "SUBSCRIBERTYPE")
@@ -88,7 +90,7 @@ public class SubscriberOrder implements Serializable {
 //    @Column(name = "PRODUCTID")
 //    private Long productId;
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "PRODUCTID", insertable = false, updatable = false)
+    @JoinColumn(name = "PRODUCTID", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private ProductEntry productEntry;
     @Column(name = "CAMPAIGNID")
     private Long campaignId;

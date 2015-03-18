@@ -3,12 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.nms.ccweb.entity.security;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -35,38 +34,39 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "CCS_USER")
 @XmlRootElement
 public class User implements Serializable {
-    
+
     private static final long serialVersionUID = 7197087364711440351L;
-    
+
     @Id
     @Column(name = "USERNAME")
     private String userName;
-    
+
     @NotNull
     @Column(name = "PASSWORD")
     private String password;
-    
+
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "CREATEDATE")
     private Date createDate;
-    
+
     @Size(max = 100, message = "user.fullname.maxlength")
     @Column(name = "FULLNAME")
     private String fullname;
-    
+
     @Size(max = 150, message = "user.email.maxlength")
     @Column(name = "EMAIL")
     private String email;
-    
+
     @Size(max = 250, message = "user.description.maxlength")
     @Column(name = "DESCRIPTION")
     private String description;
-    
+
     @ElementCollection(targetClass = UserRole.class)
     @Enumerated(EnumType.STRING)
-    @CollectionTable(name = "CCS_USER_GROUP", joinColumns = {@JoinColumn(name = "USERNAME")})
+    @CollectionTable(name = "CCS_USER_GROUP", joinColumns = {
+        @JoinColumn(name = "USERNAME", referencedColumnName = "USERNAME")})
     @Column(name = "GROUPNAME")
-    private Collection<UserRole> roles;
+    private List<UserRole> roles;
 
     public User() {
     }
@@ -111,11 +111,11 @@ public class User implements Serializable {
         this.description = description;
     }
 
-    public Collection<UserRole> getRoles() {
+    public List<UserRole> getRoles() {
         return roles;
     }
 
-    public void setRoles(Collection<UserRole> roles) {
+    public void setRoles(List<UserRole> roles) {
         this.roles = roles;
     }
 
