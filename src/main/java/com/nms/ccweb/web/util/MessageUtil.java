@@ -49,6 +49,7 @@ public class MessageUtil {
     
     public static void addGlobalErrorMessage(String message) {
         addGlobalMessage(FacesMessage.SEVERITY_ERROR, message);
+        JsfUtil.isValidationFailed();
     }
     
     @SuppressWarnings("ThrowableResultIgnored")

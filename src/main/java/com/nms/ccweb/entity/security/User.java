@@ -37,6 +37,11 @@ public class User implements Serializable {
 
     private static final long serialVersionUID = 7197087364711440351L;
 
+    public enum UserRole {
+
+        Administrator;
+    }
+
     @Id
     @Column(name = "USERNAME")
     private String userName;

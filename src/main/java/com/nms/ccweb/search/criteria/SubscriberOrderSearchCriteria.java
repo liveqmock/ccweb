@@ -9,6 +9,8 @@ import com.nms.ccweb.entity.vasgate.ProductEntry;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Past;
 
 /**
  * Search criteria for Subscriber Order search.
@@ -22,8 +24,11 @@ public class SubscriberOrderSearchCriteria implements Serializable {
     private static final long serialVersionUID = 8533205233182643521L;
 
     private String isdn;
-    private Date startOrderDate;
-    private Date endOrderDate;
+    @NotNull
+    @Past
+    private Date startOrderDate = new Date();
+    @NotNull
+    private Date endOrderDate = new Date();
     private Short status;
     private Collection<ProductEntry> products;
     private Collection<String> orderTypes;

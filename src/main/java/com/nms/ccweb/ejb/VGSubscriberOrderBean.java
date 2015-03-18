@@ -5,6 +5,8 @@
  */
 package com.nms.ccweb.ejb;
 
+import com.nms.ccweb.entity.vasgate.AppDomain;
+import com.nms.ccweb.entity.vasgate.AppDomain_;
 import com.nms.ccweb.entity.vasgate.SubscriberOrder;
 import com.nms.ccweb.entity.vasgate.SubscriberOrder_;
 import com.nms.ccweb.search.criteria.SubscriberOrderSearchCriteria;
@@ -104,14 +106,16 @@ public class VGSubscriberOrderBean implements Serializable {
     /**
      * Get all available OrderType column value form SubscriberOrder table.
      *
+     * @param type
      * @return list of distinct orderType values
      */
-    public List<String> getAllAvailOrderTypes() {
+    public List<AppDomain> getDomains(String type) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<String> cq = cb.createQuery(String.class);
-        Root<SubscriberOrder> root = cq.from(SubscriberOrder.class);
-        cq.select(root.get(SubscriberOrder_.orderType)).distinct(true);
-        TypedQuery<String> q = em.createQuery(cq);
+        CriteriaQuery<AppDomain> cq = cb.createQuery(AppDomain.class);
+        Root<AppDomain> root = cq.from(AppDomain.class);
+        cq.select(root);
+        cq.where(cb.equal(root.get(AppDomain_.type), type));
+        TypedQuery<AppDomain> q = em.createQuery(cq);
         return q.getResultList();
     }
 

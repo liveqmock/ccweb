@@ -7,12 +7,14 @@ package com.nms.ccweb.web.controller;
 
 import com.nms.ccweb.ejb.VGProductEntryBean;
 import com.nms.ccweb.ejb.VGSubscriberOrderBean;
+import com.nms.ccweb.entity.vasgate.AppDomain;
 import com.nms.ccweb.entity.vasgate.ProductEntry;
 import com.nms.ccweb.entity.vasgate.SubscriberOrder;
 import com.nms.ccweb.search.criteria.SubscriberOrderSearchCriteria;
 import com.nms.ccweb.search.model.SubscriberOrderLazyModel;
 import com.nms.ccweb.web.util.MessageUtil;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
@@ -35,6 +37,7 @@ public class VGSubscriberOrderSearchController implements Serializable {
 
     private static final long serialVersionUID = -9173554196441575400L;
     private static final Logger LOGGER = Logger.getLogger(VGSubscriberOrderSearchController.class.getName());
+    private static final String ORDER_TYPE_NAME = "ACTION_TYPE";
 
     @EJB
     private VGSubscriberOrderBean vGSubscriberOrderBean;
@@ -54,6 +57,22 @@ public class VGSubscriberOrderSearchController implements Serializable {
 
     /* Business actions  */
     public void search(ActionEvent e) {
+        // validate
+        Date startDate = criteria.getStartOrderDate();
+        Date endDate = criteria.getEndOrderDate();
+        
+        if (!endDate.after(startDate)) {
+            MessageUtil.addGlobalErrorMessage("end-date-must-after-start-date");
+            return;
+        }
+        
+        // calculate days between
+        long daysBetween = (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24);
+        if (daysBetween > 5) {
+            MessageUtil.addGlobalErrorMessage("end-date-dont-greeter-than-start-date-5-days");
+            return;
+        }
+        
         resetModel();
     }
 
@@ -76,15 +95,15 @@ public class VGSubscriberOrderSearchController implements Serializable {
     /* Get or Prepare select item for SubscriberOrder's orderType */
     public SelectItem[] getOrderTypeSelectItems() {
         if (orderTypeSelectItems == null) {
-            List<String> orderTypes = vGSubscriberOrderBean.getAllAvailOrderTypes();
+            List<AppDomain> orderTypes = vGSubscriberOrderBean.getDomains(ORDER_TYPE_NAME);
             if (orderTypes != null && orderTypes.size() > 0) {
                 orderTypeSelectItems = new SelectItem[orderTypes.size() + 1];
                 /* Add empty select */
                 orderTypeSelectItems[0] = new SelectItem(null, MessageUtil.getBundleMessage("empty-select-label"));
                 /* Add others */
                 int i = 1;
-                for (String orderType : orderTypes) {
-                    orderTypeSelectItems[i++] = new SelectItem(orderType, MessageUtil.getBundleMessage(orderType));
+                for (AppDomain orderType : orderTypes) {
+                    orderTypeSelectItems[i++] = new SelectItem(orderType.getAlias(), orderType.getTitle());
                 }
             }
         }

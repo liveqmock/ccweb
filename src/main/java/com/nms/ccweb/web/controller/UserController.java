@@ -7,7 +7,6 @@ package com.nms.ccweb.web.controller;
 
 import com.nms.ccweb.ejb.UserBean;
 import com.nms.ccweb.entity.security.User;
-import com.nms.ccweb.entity.security.UserRole;
 import com.nms.ccweb.search.model.UserLazyModel;
 import com.nms.ccweb.web.util.MessageUtil;
 import java.io.Serializable;
@@ -160,9 +159,9 @@ public class UserController implements Serializable {
 
     public SelectItem[] getRoleSelectItems() {
         if (roleSelectItems == null) {
-            roleSelectItems = new SelectItem[UserRole.values().length];
-            for (int i = 0; i < UserRole.values().length; i++) {
-                roleSelectItems[i] = new SelectItem(UserRole.values()[i], MessageUtil.getBundleMessage(UserRole.values()[i].name()));
+            roleSelectItems = new SelectItem[User.UserRole.values().length];
+            for (int i = 0; i < User.UserRole.values().length; i++) {
+                roleSelectItems[i] = new SelectItem(User.UserRole.values()[i], MessageUtil.getBundleMessage(User.UserRole.values()[i].name()));
             }
         }
         return roleSelectItems;

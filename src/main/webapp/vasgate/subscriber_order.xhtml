@@ -23,6 +23,7 @@
 
     <ui:define name="content">
         <h:form>
+            <p:messages globalOnly="true" closable="true"/>
             <p:panel id="searchFormPanel">
                 <h:panelGrid columns="6" width="100%">
                     <p:outputLabel for="isdn" 
@@ -63,8 +64,7 @@
                     <p:commandButton id="searchBtn" 
                                      value="#{msg['search']}" 
                                      actionListener="#{vgSubOrderCtl.search}" 
-                                     ajax="true"
-                                     update="subOrderTable" 
+                                     update="@form" 
                                      icon="ui-icon-search"/>
                 </f:facet>
             </p:panel><!-- end searchFormPanel -->
