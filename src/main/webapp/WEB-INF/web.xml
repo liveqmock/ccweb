@@ -9,8 +9,8 @@
         <param-value>redmond</param-value>
     </context-param>
     <context-param>
-        <param-name>facelets.SKIP_COMMENTS</param-name>
-        <param-value>true</param-value>
+        <param-name>javax.faces.FACELETS_SKIP_COMMENTS</param-name>
+        <param-value>ENABLED</param-value>
     </context-param>
     <servlet>
         <servlet-name>Faces Servlet</servlet-name>
@@ -43,7 +43,7 @@
             <role-name>User</role-name>
         </auth-constraint>
         <user-data-constraint>
-            <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+            <transport-guarantee>NONE</transport-guarantee>
         </user-data-constraint>
     </security-constraint>
     <security-constraint>
@@ -56,7 +56,7 @@
             <role-name>Administrator</role-name>
         </auth-constraint>
         <user-data-constraint>
-            <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+            <transport-guarantee>NONE</transport-guarantee>
         </user-data-constraint>
     </security-constraint>
     <login-config>

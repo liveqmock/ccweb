@@ -7,12 +7,24 @@ package com.nms.ccweb.ejb;
 
 import com.nms.ccweb.entity.vasgate.AppDomain;
 import com.nms.ccweb.entity.vasgate.AppDomain_;
+import com.nms.ccweb.entity.vasgate.ProductEntry;
 import com.nms.ccweb.entity.vasgate.SubscriberOrder;
 import com.nms.ccweb.entity.vasgate.SubscriberOrder_;
 import com.nms.ccweb.search.criteria.SubscriberOrderSearchCriteria;
 import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.text.Format;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -22,6 +34,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.sql.DataSource;
 
 /**
  * EJB for SubscriberOrder Entity.
@@ -34,6 +47,10 @@ import javax.persistence.criteria.Root;
 public class VGSubscriberOrderBean implements Serializable {
 
     private static final long serialVersionUID = 2338076935307329551L;
+    private static final Logger _LOGGER = Logger.getLogger(VGSubscriberOrderBean.class.getName());
+    
+    @Resource(lookup = "jdbc/vasgate")
+    private DataSource dataSource;
 
     @PersistenceContext(unitName = "vasgatePU")
     private EntityManager em;
@@ -54,53 +71,187 @@ public class VGSubscriberOrderBean implements Serializable {
      */
     public List<SubscriberOrder> searchSubscriberOrder(SubscriberOrderSearchCriteria criteria,
             int start, int range, String sortField, boolean isAsc) {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<SubscriberOrder> cq = cb.createQuery(SubscriberOrder.class);
-        Root<SubscriberOrder> root = cq.from(SubscriberOrder.class);
-        cq.select(root);
-
-        List<Predicate> predicates = buildPredicates(criteria, cb, root);
-
-        if (predicates != null && !predicates.isEmpty()) {
-            cq.where(predicates.toArray(new Predicate[]{}));
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+        List<SubscriberOrder> resutl = new ArrayList<>();
+        Format format = new SimpleDateFormat("dd/MM/yyyy");
+        
+        try {
+            conn = dataSource.getConnection();
+            StringBuilder sql = new StringBuilder("SELECT * FROM (SELECT a.*, ROWNUM rnum  FROM (SELECT ORDERID, AMOUNT, CAMPAIGNID, CAUSE, CHANNEL, CREATEDATE, CYCLEDATE, DESCRIPTION, DISCOUNT, ISDN, MERCHANTID, MODIFIEDDATE, OFFERPRICE, ORDERDATE, ORDERNO, ORDERTYPE, PRICE, QUANTITY, REASONID, SCORE, STATUS, SUBSCRIBERID, SUBSCRIBERTYPE, USERID, USERNAME, PRODUCTID, SUBPRODUCTID FROM SUBSCRIBERORDER WHERE ");
+            
+            if (criteria.getStartOrderDate() != null) {
+                sql.append(" ORDERDATE >= TO_DATE('").append(format.format(criteria.getStartOrderDate())).append("', 'dd/MM/yyyy') AND");
+            }
+            
+            if (criteria.getEndOrderDate()!= null) {
+                sql.append(" ORDERDATE <= TO_DATE('").append(format.format(criteria.getEndOrderDate())).append("', 'dd/MM/yyyy') AND");
+            }
+            
+            if (criteria.getIsdn() != null && !criteria.getIsdn().trim().isEmpty()) {
+                sql.append(" ISDN LIKE '").append(criteria.getIsdn()).append("%' AND");
+            }
+            
+            if (criteria.getOrderType() != null && !criteria.getOrderType().trim().isEmpty()) {
+                sql.append(" ORDERTYPE = '").append(criteria.getOrderType()).append("' AND");
+            }
+            
+            if (criteria.getProductEntry() != null) {
+                sql.append(" PRODUCTID = ").append(criteria.getProductEntry().getProductId()).append(" AND");
+            }
+            
+            String query = sql.toString();
+            
+            if (query.endsWith(" AND")) {
+                query = query.substring(0, query.length() - 4);
+            }
+            
+            query += ") a WHERE ROWNUM <= " + (start + range) + ") WHERE rnum > " + start;
+            
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                SubscriberOrder subOrder = new SubscriberOrder();
+                subOrder.setOrderId(rs.getLong("ORDERID"));
+                subOrder.setAmount(rs.getBigDecimal("AMOUNT"));
+                subOrder.setCampaignId(rs.getLong("CAMPAIGNID"));
+                subOrder.setIsdn(rs.getString("ISDN"));
+                subOrder.setOrderDate(rs.getDate("ORDERDATE"));
+                subOrder.setStatus(rs.getShort("STATUS"));
+                subOrder.setOrdertype(rs.getString("ORDERTYPE"));
+                subOrder.setProductid(em.find(ProductEntry.class, rs.getLong("PRODUCTID")));
+                
+                resutl.add(subOrder);
+            }
+        } catch (Exception e) {
+            _LOGGER.log(Level.SEVERE, "Error ", e);
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(VGSubscriberOrderBean.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(VGSubscriberOrderBean.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(VGSubscriberOrderBean.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
         }
-
-        if (sortField != null && !sortField.trim().isEmpty()) {
-            Order order = isAsc ? cb.asc(root.get(sortField)) : cb.desc(root.get(sortField));
-            cq.orderBy(order);
-        } else {
-            cq.orderBy(cb.desc(root.get(SubscriberOrder_.orderDate)));
-        }
-
-        TypedQuery<SubscriberOrder> q = em.createQuery(cq);
-
-        if (start >= 0 && range >= 0) {
-            q.setFirstResult(start);
-            q.setMaxResults(range);
-        }
-
-        return q.getResultList();
+        return resutl;
     }
-    
+
     /**
      * Count SubscriberOrder by criteria
+     *
      * @param criteria criria get from search form
-     * @return 
+     * @return
      */
     public int countSubscriberOrders(SubscriberOrderSearchCriteria criteria) {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-        Root<SubscriberOrder> root = cq.from(SubscriberOrder.class);
-        cq.select(cb.count(root));
         
-        List<Predicate> predicates = buildPredicates(criteria, cb, root);
-
-        if (predicates != null && !predicates.isEmpty()) {
-            cq.where(predicates.toArray(new Predicate[]{}));
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+        int resutl = 0;
+        Format format = new SimpleDateFormat("dd/MM/yyyy");
+        
+        try {
+            conn = dataSource.getConnection();
+            StringBuilder sql = new StringBuilder("SELECT COUNT(ORDERID) COUNT FROM SUBSCRIBERORDER WHERE ");
+            
+            if (criteria.getStartOrderDate() != null) {
+                sql.append(" ORDERDATE >= TO_DATE('").append(format.format(criteria.getStartOrderDate())).append("', 'dd/MM/yyyy') AND");
+            }
+            
+            if (criteria.getEndOrderDate()!= null) {
+                sql.append(" ORDERDATE <= TO_DATE('").append(format.format(criteria.getEndOrderDate())).append("', 'dd/MM/yyyy') AND");
+            }
+            
+            if (criteria.getIsdn() != null && !criteria.getIsdn().trim().isEmpty()) {
+                sql.append(" ISDN LIKE '").append(criteria.getIsdn()).append("%' AND");
+            }
+            
+            if (criteria.getOrderType() != null && !criteria.getOrderType().trim().isEmpty()) {
+                sql.append(" ORDERTYPE = '").append(criteria.getOrderType()).append("' AND");
+            }
+            
+            if (criteria.getProductEntry() != null) {
+                sql.append(" PRODUCTID = ").append(criteria.getProductEntry().getProductId()).append(" AND");
+            }
+            
+            String query = sql.toString();
+            
+            if (query.endsWith(" AND")) {
+                query = query.substring(0, query.length() - 4);
+            }
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery(query);
+            if (rs.next()) {
+                resutl = rs.getInt("COUNT");
+            }
+        } catch (Exception e) {
+            _LOGGER.log(Level.SEVERE, "Error ", e);
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(VGSubscriberOrderBean.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(VGSubscriberOrderBean.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(VGSubscriberOrderBean.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
         }
+        return resutl;
         
-        TypedQuery<Long> q = em.createQuery(cq);
-        return q.getSingleResult().intValue();
+        
+        
+//        CriteriaBuilder cb = em.getCriteriaBuilder();
+//        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+//        Root<SubscriberOrder> root = cq.from(SubscriberOrder.class);
+//        cq.select(cb.count(root));
+//        
+//        List<Predicate> predicates = buildPredicates(criteria, cb, root);
+//
+//        if (predicates != null && !predicates.isEmpty()) {
+//            cq.where(predicates.toArray(new Predicate[]{}));
+//        }
+//        try {
+//            TypedQuery<Long> q = em.createQuery(cq);
+//            int value = q.getSingleResult().intValue();
+//            return value;
+//        } catch (Exception e) {
+//            _LOGGER.log(Level.SEVERE, "Error when count", e);
+//            return 0;
+//        }    
+
     }
 
     /**
