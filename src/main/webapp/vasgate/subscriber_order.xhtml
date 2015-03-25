@@ -107,6 +107,12 @@
                 <p:column headerText="#{msg['suborder.product.title']}">
                     <h:outputText value="#{order.productEntry.title}" />
                 </p:column>
+                
+                <p:column headerText="#{msg['register-date']}">
+                    <h:outputText value="#{vgSubOrderCtl.getSubProduct(order.isdn, order.productEntry).registerdate}">
+                        <f:convertDateTime pattern="dd/MM/yyy hh:mm"/>
+                    </h:outputText>
+                </p:column>
 
                 <p:column headerText="#{msg['suborder.amount.title']}" style="text-align: right">
                     <h:outputText value="#{order.amount}">

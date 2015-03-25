@@ -2,11 +2,9 @@
 <Scene Scope="Project" version="2">
     <Scope Scope="Faces Configuration Only"/>
     <Scope Scope="Project">
-        <Node id="index.html" x="425" y="105" zoom="true"/>
-        <Node id="vasgate/subscriber_order.xhtml" x="86" y="106" zoom="true"/>
         <Node id="index.xhtml" x="658" y="112" zoom="true"/>
         <Node id="common/template.xhtml" x="64" y="302" zoom="true"/>
-        <Node id="welcomePrimefaces.xhtml" x="655" y="303" zoom="true"/>
+        <Node id="vasgate/subscriber_order.xhtml" x="86" y="106" zoom="true"/>
     </Scope>
     <Scope Scope="All Faces Configurations"/>
 </Scene>

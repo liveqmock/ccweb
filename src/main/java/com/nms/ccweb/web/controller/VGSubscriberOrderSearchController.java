@@ -10,12 +10,14 @@ import com.nms.ccweb.ejb.VGSubscriberOrderBean;
 import com.nms.ccweb.entity.vasgate.AppDomain;
 import com.nms.ccweb.entity.vasgate.ProductEntry;
 import com.nms.ccweb.entity.vasgate.SubscriberOrder;
+import com.nms.ccweb.entity.vasgate.SubscriberProduct;
 import com.nms.ccweb.search.criteria.SubscriberOrderSearchCriteria;
 import com.nms.ccweb.search.model.SubscriberOrderLazyModel;
 import com.nms.ccweb.web.util.MessageUtil;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
@@ -34,16 +36,16 @@ import org.primefaces.model.LazyDataModel;
 @Named("vgSubOrderCtl")
 @SessionScoped
 public class VGSubscriberOrderSearchController implements Serializable {
-
+    
     private static final long serialVersionUID = -9173554196441575400L;
     private static final Logger LOGGER = Logger.getLogger(VGSubscriberOrderSearchController.class.getName());
     private static final String ORDER_TYPE_NAME = "ACTION_TYPE";
-
+    
     @EJB
     private VGSubscriberOrderBean vGSubscriberOrderBean;
     @EJB
     private VGProductEntryBean vGProductEntryBean;
-
+    
     private SubscriberOrderSearchCriteria criteria;
     private LazyDataModel<SubscriberOrder> model;
     /* store select items for orderType select */
@@ -65,7 +67,7 @@ public class VGSubscriberOrderSearchController implements Serializable {
             MessageUtil.addGlobalErrorMessage("end-date-must-after-start-date");
             return;
         }
-        
+
         // calculate days between
         long daysBetween = (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24);
         if (daysBetween > 5) {
@@ -75,8 +77,8 @@ public class VGSubscriberOrderSearchController implements Serializable {
         
         resetModel();
     }
-
-    private void resetModel() { 
+    
+    private void resetModel() {        
         model = null;
     }
 
@@ -87,7 +89,7 @@ public class VGSubscriberOrderSearchController implements Serializable {
         }
         return criteria;
     }
-
+    
     public void setCriteria(SubscriberOrderSearchCriteria criteria) {
         this.criteria = criteria;
     }
@@ -126,15 +128,26 @@ public class VGSubscriberOrderSearchController implements Serializable {
         }
         return productSelectItems;
     }
-
+    
     public LazyDataModel<SubscriberOrder> getModel() {
         if (model == null) {
             model = new SubscriberOrderLazyModel(getCriteria(), vGSubscriberOrderBean);
         }
         return model;
     }
-
+    
     public void setModel(LazyDataModel<SubscriberOrder> model) {
         this.model = model;
+    }
+    
+    public SubscriberProduct getSubProduct(String isdn, ProductEntry productEntry) {
+        SubscriberProduct subProduct = new SubscriberProduct();
+        try {
+            subProduct = vGSubscriberOrderBean.getSubProductByIsdnAndProduct(isdn, productEntry);
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "SubscriberProduct not found with isdn = {0}, productId = {}", 
+                    new Object[]{isdn, productEntry.getProductId()});
+        }
+        return subProduct;
     }
 }

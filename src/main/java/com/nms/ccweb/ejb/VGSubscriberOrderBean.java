@@ -10,11 +10,10 @@ import com.nms.ccweb.entity.vasgate.AppDomain_;
 import com.nms.ccweb.entity.vasgate.ProductEntry;
 import com.nms.ccweb.entity.vasgate.SubscriberOrder;
 import com.nms.ccweb.entity.vasgate.SubscriberOrder_;
+import com.nms.ccweb.entity.vasgate.SubscriberProduct;
 import com.nms.ccweb.search.criteria.SubscriberOrderSearchCriteria;
 import java.io.Serializable;
 import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -31,7 +30,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.sql.DataSource;
@@ -48,7 +46,7 @@ public class VGSubscriberOrderBean implements Serializable {
 
     private static final long serialVersionUID = 2338076935307329551L;
     private static final Logger _LOGGER = Logger.getLogger(VGSubscriberOrderBean.class.getName());
-    
+
     @Resource(lookup = "jdbc/vasgate")
     private DataSource dataSource;
 
@@ -76,39 +74,39 @@ public class VGSubscriberOrderBean implements Serializable {
         ResultSet rs = null;
         List<SubscriberOrder> resutl = new ArrayList<>();
         Format format = new SimpleDateFormat("dd/MM/yyyy");
-        
+
         try {
             conn = dataSource.getConnection();
             StringBuilder sql = new StringBuilder("SELECT * FROM (SELECT a.*, ROWNUM rnum  FROM (SELECT ORDERID, AMOUNT, CAMPAIGNID, CAUSE, CHANNEL, CREATEDATE, CYCLEDATE, DESCRIPTION, DISCOUNT, ISDN, MERCHANTID, MODIFIEDDATE, OFFERPRICE, ORDERDATE, ORDERNO, ORDERTYPE, PRICE, QUANTITY, REASONID, SCORE, STATUS, SUBSCRIBERID, SUBSCRIBERTYPE, USERID, USERNAME, PRODUCTID, SUBPRODUCTID FROM SUBSCRIBERORDER WHERE ");
-            
+
             if (criteria.getStartOrderDate() != null) {
                 sql.append(" ORDERDATE >= TO_DATE('").append(format.format(criteria.getStartOrderDate())).append("', 'dd/MM/yyyy') AND");
             }
-            
-            if (criteria.getEndOrderDate()!= null) {
+
+            if (criteria.getEndOrderDate() != null) {
                 sql.append(" ORDERDATE <= TO_DATE('").append(format.format(criteria.getEndOrderDate())).append("', 'dd/MM/yyyy') AND");
             }
-            
+
             if (criteria.getIsdn() != null && !criteria.getIsdn().trim().isEmpty()) {
                 sql.append(" ISDN LIKE '").append(criteria.getIsdn()).append("%' AND");
             }
-            
+
             if (criteria.getOrderType() != null && !criteria.getOrderType().trim().isEmpty()) {
                 sql.append(" ORDERTYPE = '").append(criteria.getOrderType()).append("' AND");
             }
-            
+
             if (criteria.getProductEntry() != null) {
                 sql.append(" PRODUCTID = ").append(criteria.getProductEntry().getProductId()).append(" AND");
             }
-            
+
             String query = sql.toString();
-            
+
             if (query.endsWith(" AND")) {
                 query = query.substring(0, query.length() - 4);
             }
-            
+
             query += ") a WHERE ROWNUM <= " + (start + range) + ") WHERE rnum > " + start;
-            
+
             stmt = conn.createStatement();
             rs = stmt.executeQuery(query);
             while (rs.next()) {
@@ -121,7 +119,7 @@ public class VGSubscriberOrderBean implements Serializable {
                 subOrder.setStatus(rs.getShort("STATUS"));
                 subOrder.setOrdertype(rs.getString("ORDERTYPE"));
                 subOrder.setProductid(em.find(ProductEntry.class, rs.getLong("PRODUCTID")));
-                
+
                 resutl.add(subOrder);
             }
         } catch (Exception e) {
@@ -134,7 +132,7 @@ public class VGSubscriberOrderBean implements Serializable {
                     Logger.getLogger(VGSubscriberOrderBean.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-            
+
             if (stmt != null) {
                 try {
                     stmt.close();
@@ -142,7 +140,7 @@ public class VGSubscriberOrderBean implements Serializable {
                     Logger.getLogger(VGSubscriberOrderBean.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-            
+
             if (rs != null) {
                 try {
                     rs.close();
@@ -161,39 +159,39 @@ public class VGSubscriberOrderBean implements Serializable {
      * @return
      */
     public int countSubscriberOrders(SubscriberOrderSearchCriteria criteria) {
-        
+
         Connection conn = null;
         Statement stmt = null;
         ResultSet rs = null;
         int resutl = 0;
         Format format = new SimpleDateFormat("dd/MM/yyyy");
-        
+
         try {
             conn = dataSource.getConnection();
             StringBuilder sql = new StringBuilder("SELECT COUNT(ORDERID) COUNT FROM SUBSCRIBERORDER WHERE ");
-            
+
             if (criteria.getStartOrderDate() != null) {
                 sql.append(" ORDERDATE >= TO_DATE('").append(format.format(criteria.getStartOrderDate())).append("', 'dd/MM/yyyy') AND");
             }
-            
-            if (criteria.getEndOrderDate()!= null) {
+
+            if (criteria.getEndOrderDate() != null) {
                 sql.append(" ORDERDATE <= TO_DATE('").append(format.format(criteria.getEndOrderDate())).append("', 'dd/MM/yyyy') AND");
             }
-            
+
             if (criteria.getIsdn() != null && !criteria.getIsdn().trim().isEmpty()) {
                 sql.append(" ISDN LIKE '").append(criteria.getIsdn()).append("%' AND");
             }
-            
+
             if (criteria.getOrderType() != null && !criteria.getOrderType().trim().isEmpty()) {
                 sql.append(" ORDERTYPE = '").append(criteria.getOrderType()).append("' AND");
             }
-            
+
             if (criteria.getProductEntry() != null) {
                 sql.append(" PRODUCTID = ").append(criteria.getProductEntry().getProductId()).append(" AND");
             }
-            
+
             String query = sql.toString();
-            
+
             if (query.endsWith(" AND")) {
                 query = query.substring(0, query.length() - 4);
             }
@@ -212,7 +210,7 @@ public class VGSubscriberOrderBean implements Serializable {
                     Logger.getLogger(VGSubscriberOrderBean.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-            
+
             if (stmt != null) {
                 try {
                     stmt.close();
@@ -220,7 +218,7 @@ public class VGSubscriberOrderBean implements Serializable {
                     Logger.getLogger(VGSubscriberOrderBean.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-            
+
             if (rs != null) {
                 try {
                     rs.close();
@@ -230,9 +228,7 @@ public class VGSubscriberOrderBean implements Serializable {
             }
         }
         return resutl;
-        
-        
-        
+
 //        CriteriaBuilder cb = em.getCriteriaBuilder();
 //        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 //        Root<SubscriberOrder> root = cq.from(SubscriberOrder.class);
@@ -251,7 +247,6 @@ public class VGSubscriberOrderBean implements Serializable {
 //            _LOGGER.log(Level.SEVERE, "Error when count", e);
 //            return 0;
 //        }    
-
     }
 
     /**
@@ -307,5 +302,18 @@ public class VGSubscriberOrderBean implements Serializable {
         }
 
         return predicates;
+    }
+
+    public SubscriberProduct getSubProductByIsdnAndProduct(String isdn, ProductEntry product) {
+        TypedQuery<SubscriberProduct> query = em.createQuery("SELECT sb FROM SubscriberProduct sb WHERE sb.isdn = :isdn AND sb.productEntry = :productEntry", SubscriberProduct.class);
+        query.setParameter("isdn", isdn);
+        query.setParameter("productEntry", product);
+        query.setMaxResults(1);
+        List<SubscriberProduct> subProducts = query.getResultList();
+        if (subProducts != null && subProducts.size() > 0) {
+            return subProducts.get(0);
+        } else {
+            return null;
+        }
     }
 }
